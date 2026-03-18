@@ -1,0 +1,38 @@
+name: Validate SKILLs
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    paths: [ '.github/skills/**', '.github/**' ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install deps
+        run: pip install -r requirements.txt
+      - name: Find changed SKILL.md and validate
+        run: |
+          set -e
+          # detect changed SKILL.md files in the PR or recent push
+          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
+            base_sha=$(jq -r .pull_request.base.sha < $GITHUB_EVENT_PATH)
+            head_sha=$(jq -r .pull_request.head.sha < $GITHUB_EVENT_PATH)
+            git fetch --depth=1 origin $base_sha $head_sha || true
+            changed=$(git diff --name-only $base_sha $head_sha | grep -E '\.github/skills/.+/SKILL\.md' || true)
+          else
+            changed=$(git diff --name-only HEAD~1 HEAD | grep -E '\.github/skills/.+/SKILL\.md' || true)
+          fi
+          if [ -z "$changed" ]; then
+            echo "No SKILL.md changed"
+            exit 0
+          fi
+          echo "$changed" | while read f; do
+            echo "Validating $f"
+            python3 tools/validate_skill.py "$f"
+          done

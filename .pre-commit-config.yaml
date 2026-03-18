@@ -1,0 +1,8 @@
+repos:
+  - repo: local
+    hooks:
+      - id: validate-skill
+        name: validate-skill
+        entry: python3 tools/validate_skill.py
+        language: system
+        files: '^.github/skills/.+/SKILL\.md$'
