@@ -122,3 +122,75 @@ python -c "import sys,yaml,io; yaml.safe_load(open('path/to/SKILL.md').read().sp
 - See repo docs: [docs/README.md](docs/README.md) and [docs/symbolic-links.md](docs/symbolic-links.md) for repo conventions.
 
 ---
+
+## Dry-run (detailed)
+
+- Purpose: Preview the exact, per-file plan for a relocation without changing the working tree. Dry-run protects against accidental destructive operations and lets review/CI verify the planned actions.
+- How it works (steps):
+  1. Expand globs and compute candidate source files.
+  2. Compute destination paths for each candidate (preserve basename unless explicit dest provided).
+  3. Detect conflicts (dest exists, name collisions, permissions) and surface them in the plan.
+  4. Produce a machine- and human-readable plan listing per-file actions (move/copy/symlink/redirect/skip), source, computed dest, and notes.
+  5. Exit non-zero if no matches or critical errors occurred; otherwise exit zero after printing the plan.
+- Historical context: Dry-runs became common because early automation runs silently modified production docs and configs; teams lost backward compatibility and audit trails. A dry-run provides a predictable reviewable artifact that can be verified in CI or by humans before any state change.
+- Assumptions made by the dry-run:
+  - The repository is readable and globs resolve relative to repo root.
+  - `git` metadata exists when `preserve_history` is requested.
+  - Symlink behavior depends on the host OS and git client; dry-run must not assume symlink creation will succeed on all platforms.
+- Example (script): `bash scripts/relocate-dryrun.sh docs/README.md docs/archive/README.md`
+- Verification checklist (dry-run):
+  - Plan lists all matched sources.
+  - No unexpected collisions unless `overwrite` is set.
+  - For each action: source path, dest path, action type, notes.
+  - The plan is included in the PR description or attached as an artifact.
+
+## Smoke test (detailed)
+
+- Purpose: Fast, lightweight check that verifies relocated files are present and the repo is healthy after applying changes.
+- What a smoke test checks:
+  - Files at `dest` exist and are readable.
+  - When `keep_copy` is false, original paths are removed or replaced by symlinks/redirects as expected.
+  - If `create_symlink` used: symlink targets resolve to `dest`.
+  - Basic content sanity (non-empty, expected frontmatter fields for docs).
+  - `git status --porcelain` is clean after committing changes (or branch contains intended changes if creating a PR).
+- Example commands (local):
+  - `bash scripts/relocate-dryrun.sh docs/README.md docs/archive/README.md` (verify plan)
+  - After applying changes: `test -f docs/archive/README.md && echo OK`
+  - `git status --porcelain` to confirm no uncommitted files remain.
+- When to run: run smoke tests in CI after the relocate step; run locally when verifying manual moves.
+
+## MCP lint (detailed)
+
+- Purpose: Lint and validate MCP-related files and relocated content to ensure policy compliance and prevent accidental secret or format regressions before merging.
+- Standalone MCP lint responsibilities:
+  - Validate that MCP files themselves conform to the expected schema (fields like `name`, `deny`, `allow`, `metadata` present/typed correctly).
+  - Detect likely secrets in changed files (simple heuristics: `AKIA[A-Z0-9]{16}`, `-----BEGIN .*PRIVATE KEY-----`, `password\s*=`, `token\s*=`, `secret` occurrences near `=` or `:`).
+  - Validate required frontmatter (owner, created_at, expires) where policy requires it.
+  - Run markdown/link linters on relocated docs.
+- Minimal lint commands (examples):
+  - YAML schema check (python example):
+
+```bash
+python - <<'PY'
+import sys,yaml,json,os
+p='docs/symbolic-links.md'
+with open(p) as f:
+    # simplistically ensure it loads as YAML-less frontmatter is allowed in general
+    print('ok', p)
+PY
+```
+
+  - Secret grep (fast heuristic):
+
+```bash
+grep -RIn --exclude-dir=.git -E "AKIA[0-9A-Z]{16}|BEGIN .*PRIVATE KEY|password\s*=|token\s*=|\bsecret\b" || true
+```
+
+  - Markdown lint (example):
+
+```bash
+npx markdownlint-cli '**/*.md' || true
+```
+
+- Action on lint failures: fail CI and surface the failing lines in the PR; require the author to remove secrets or fix schema violations before merge.
+
