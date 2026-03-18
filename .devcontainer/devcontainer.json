@@ -2,9 +2,7 @@
     "name": "OCI Management Space",
     "image": "mcr.microsoft.com/devcontainers/python:3",
     "features": {
-        "ghcr.io/devcontainers/features/common-utils:1": {},
-        "ghcr.io/devcontainers/features/docker-in-docker:1": {}
-    },
+        "ghcr.io/devcontainers/features/common-utils:1": {}    },
     "customizations": {
         "vscode": {
             "extensions": [
