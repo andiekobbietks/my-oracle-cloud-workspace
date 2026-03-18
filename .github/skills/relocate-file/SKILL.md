@@ -73,6 +73,12 @@ the repository while offering options for history preservation, backups, dry-run
 
   `source: docs/guide.md`, `dest: README.md`, `create_symlink: true`, `commit_and_pr: true`
 
+## Usage example
+
+Run the included dry-run script to preview a single-file relocation:
+
+`bash scripts/relocate-dryrun.sh docs/README.md docs/archive/README.md`
+
 ## Implementation notes for agents
 
 - Always present a dry-run plan when globs are used or multiple files match.
