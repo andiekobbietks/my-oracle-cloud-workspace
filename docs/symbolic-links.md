@@ -4,10 +4,17 @@ What is a symlink?
 
 A symbolic link (symlink) is a special filesystem entry that points to another file or directory by path. It acts like a lightweight pointer or shortcut.
 
+
 Why use symlinks?
-- Avoid duplicating content.
-- Provide alternate or legacy paths to files after moving them.
-- Let multiple locations reference a single canonical file.
+
+- **Avoid duplicating content.**
+	- *Scenario:* Suppose you have a shared setup script or onboarding guide that is relevant to multiple teams or environments. Instead of copying the same file into several locations (which leads to maintenance headaches and version drift), you can place the canonical file in one location and create symlinks elsewhere. This ensures all references always point to the latest version, and updates only need to be made in one place.
+
+- **Provide alternate or legacy paths to files after moving them.**
+	- *Scenario:* If you reorganize your documentation and move `docs/old-guide.md` to `docs/guides/new-guide.md`, any scripts, bookmarks, or external links pointing to the old path will break. By placing a symlink at `docs/old-guide.md` pointing to the new location, you preserve backward compatibility. This is especially useful for CI/CD scripts, automation, or users who may not immediately update their references.
+
+- **Let multiple locations reference a single canonical file.**
+	- *Scenario:* Sometimes, a file (like a license, code of conduct, or shared configuration) is relevant in several subdirectories (e.g., both in the project root and inside a submodule or template folder). Rather than maintaining separate copies, you can symlink from the subdirectory to the canonical file. This ensures consistency and reduces the risk of outdated or conflicting versions.
 
 Command examples
 
