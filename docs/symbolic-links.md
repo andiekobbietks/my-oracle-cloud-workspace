@@ -31,6 +31,15 @@ History
 
 Links originated in early Unix. Hard links existed in the original Unix filesystems; symbolic (soft) links were introduced later (by the BSD/Unix community in the early 1980s) to provide more flexible redirection.
 
+## Purpose in this project
+
+This project includes a relocation skill (`.github/skills/relocate-file/SKILL.md`) that automates moving documentation and other files. When files are moved, symlinks can be used to preserve compatibility for scripts, tools, or users expecting the old path. The skill offers options to create symlinks or Markdown redirect files at the old location, ensuring discoverability and preventing broken links after refactoring.
+
+- Use symlinks when you want the old path to transparently point to the new file.
+- Use redirect files if symlinks are unsupported or for environments (like Windows) where symlinks may not work reliably.
+
+This doc explains the rationale, commands, and best practices for using symlinks in this repo, especially when relocating docs or onboarding files.
+
 Gotchas and repo notes
 - Symlinks can break if the target is moved or deleted.
 - Git stores symlinks as the link path, not the target content. On platforms without symlink support (some Windows setups), behavior may differ.
