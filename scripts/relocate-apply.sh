@@ -1,5 +1,17 @@
 #!/usr/bin/env bash
 set -euo pipefail
+
+# relocate-apply.sh — performs git moves for matched source files.
+# Safety notes:
+# - This script requires CONFIRM=yes set in the environment (or via Makefile).
+# - It uses `git mv` to preserve history when possible and stages the changes
+#   but does not create the commit automatically. This gives the user a chance
+#   to review the staged changes before committing.
+#
+# Usage (recommended via Makefile):
+#   make backup-main
+#   make apply SOURCE="docs/*.md" DEST=docs/archive/ CONFIRM=yes
+
 if [ "${1-}" = "" ] || [ "${2-}" = "" ]; then
   echo "Usage: $0 <source> <dest>" >&2
   exit 2
@@ -12,7 +24,7 @@ if [ "${CONFIRM-}" != "yes" ]; then
   exit 2
 fi
 
-# If source is a glob, expand it
+# Expand globs safely and show counts for clarity
 shopt -s nullglob
 matches=( $src )
 if [ ${#matches[@]} -eq 0 ]; then
@@ -20,6 +32,7 @@ if [ ${#matches[@]} -eq 0 ]; then
   exit 2
 fi
 
+echo "Applying relocation for ${#matches[@]} file(s)..."
 for f in "${matches[@]}"; do
   if [ -d "$dest" ]; then
     target="$dest/$(basename "$f")"
@@ -27,8 +40,9 @@ for f in "${matches[@]}"; do
     target="$dest"
   fi
 
-  echo "Applying: git mv '$f' -> '$target'"
+  echo " - git mv: '$f' -> '$target'"
   git mv -- "$f" "$target"
 done
 
-echo "Staged moves. Commit with: git commit -m 'Relocate files via scripts/relocate-apply.sh'" 
+echo "Staged moves. Review the staged changes and then commit, for example:"
+echo "  git commit -m 'Relocate files via scripts/relocate-apply.sh'"

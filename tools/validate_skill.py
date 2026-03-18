@@ -63,36 +63,52 @@ def find_asset_refs(md_body):
 
 
 def _asset_exists(path, base_dir):
+    """Return True if the referenced asset exists.
+
+    Resolution order:
+    1. If the reference is an absolute URL, accept it.
+    2. Check relative to the SKILL (base_dir) where the reference was found.
+    3. Expand shell-style globs relative to the SKILL dir.
+    4. Check the repository root for the same relative path and try globs there.
+    5. As a last resort, ask Git whether a file matching the path is tracked.
+    """
+
     p = path.strip()
+    # allow HTTP(S) links
     if p.startswith("http://") or p.startswith("https://"):
         return True
-    # direct filesystem check
+
+    # 1) direct filesystem check relative to the SKILL file directory
     candidate = os.path.join(base_dir, p)
     if os.path.exists(candidate):
         return True
-    # glob expansion relative to base_dir
+
+    # 2) glob expansion relative to the SKILL directory
     try:
         matches = glob.glob(os.path.join(base_dir, p), recursive=True)
         if matches:
             return True
     except Exception:
+        # If the glob pattern is invalid for some reason, ignore and continue
         pass
     # try repo-root checks (use git to find repo root)
+    # 3) try repo-root checks (use git to find repo root); fall back to CWD
     try:
-        proc = subprocess.run(
-            ["git", "rev-parse", "--show-toplevel"],
-            cwd=base_dir,
-            capture_output=True,
-            text=True,
-            check=True,
-        )
+        proc = subprocess.run([
+            "git",
+            "rev-parse",
+            "--show-toplevel",
+        ], cwd=base_dir, capture_output=True, text=True, check=True)
         repo_root = proc.stdout.strip()
     except Exception:
         repo_root = os.getcwd()
 
+    # check the same relative path at repo root
     candidate_repo = os.path.join(repo_root, p)
     if os.path.exists(candidate_repo):
         return True
+
+    # glob expansion relative to repo root
     try:
         matches = glob.glob(os.path.join(repo_root, p), recursive=True)
         if matches:
@@ -100,16 +116,18 @@ def _asset_exists(path, base_dir):
     except Exception:
         pass
     # try git to see if file is tracked (works when invoked inside a git repo)
+    # 4) check whether git knows about the path (tracked file)
     try:
-        res = subprocess.run([
-            "git",
-            "ls-files",
-            "--error-unmatch",
-            p,
-        ], cwd=base_dir, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        res = subprocess.run(
+            ["git", "ls-files", "--error-unmatch", p],
+            cwd=base_dir,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
         if res.returncode == 0:
             return True
     except Exception:
+        # If git is not available or fails, we can't rely on this check
         pass
     return False
 

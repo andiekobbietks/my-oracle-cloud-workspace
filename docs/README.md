@@ -14,6 +14,8 @@ Files
 - `dry-run.md` — how to preview relocation plans before making changes.
 - `smoke-test.md` — quick verification steps to validate relocations.
 - `mcp-lint.md` — linting and secret-detection guidance for MCPs and relocated content.
+ - `owasp-mapping.md` — mapping of repo artifacts to OWASP Top 10, ASVS, and Proactive Controls.
+ - `security-origins.md` — provenance, background, and first-instance history for this security work.
 
 How to edit
 1. Create or update a file under `docs/`.

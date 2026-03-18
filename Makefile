@@ -1,3 +1,6 @@
+
+# Makefile — helper targets for the relocate workflow
+# Safety: `apply` requires an explicit `CONFIRM=yes` to avoid accidental destructive changes.
 PYTHON?=python3
 PIP?=pip3
 
