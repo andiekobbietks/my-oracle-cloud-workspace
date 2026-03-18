@@ -11,10 +11,6 @@ Guidelines
 Files
 - `symbolic-links.md` — reference about symbolic links and usage in this repo.
 
-- `dry-run.md` — how to preview relocation plans before making changes.
-- `smoke-test.md` — quick verification steps to validate relocations.
-- `mcp-lint.md` — linting and secret-detection guidance for MCPs and relocated content.
-
 How to edit
 1. Create or update a file under `docs/`.
 2. Commit with a short message describing the doc change.
