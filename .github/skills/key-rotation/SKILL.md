@@ -1,7 +1,7 @@
 ---
 title: key-rotation
 name: key-rotation
-description: "Rotate OCI API credentials and long-lived keys safely"
+description: "Rotate OCI API credentials and long-lived keys safely. Trigger example: \"Rotate keys for ci-runner\""
 summary: Rotate API keys and other long-lived credentials with dry-run and staged verification
 tags:
   - key-rotation

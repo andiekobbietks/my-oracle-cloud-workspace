@@ -1,7 +1,7 @@
 ---
 title: smoke-test
 name: smoke-test
-description: Quick verification checks to validate critical paths after changes
+description: "Quick verification checks to validate critical paths after changes. Trigger example: \"Run smoke-test target=service/api\""
 summary: Fast, deterministic checks (connectivity, health endpoints, auth) to validate changes
 tags:
   - smoke
