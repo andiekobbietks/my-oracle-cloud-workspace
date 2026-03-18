@@ -4,6 +4,11 @@ description: |
   Skill to relocate one or more files (docs, README, CONTRIBUTING, etc.) within a repository.
   Supports dry-run, globs, `git mv` for history preservation, optional symlink/redirect creation,
   and automated commit/PR creation when requested.
+usage: |
+  Example: `source: .devcontainer/README.md`, `dest: ./`, `preserve_history: true`
+applyTo:
+  - .devcontainer/**
+  - docs/**
 ---
 
 # Relocate File(s)
