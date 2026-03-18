@@ -1,0 +1,21 @@
+﻿{
+    "name": "OCI Management Space",
+    "image": "mcr.microsoft.com/devcontainers/python:3",
+    "features": {
+        "ghcr.io/devcontainers/features/common-utils:1": {},
+        "ghcr.io/devcontainers/features/docker-in-docker:1": {}
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "oracle.oci-vscode-toolkit",
+                "ms-python.python"
+            ]
+        }
+    },
+    "postCreateCommand": "bash .devcontainer/setup-oci.sh",
+    "remoteEnv": {
+        "OCI_CONFIG_CONTENT": "${localEnv:OCI_CONFIG_CONTENT}",
+        "OCI_PRIVATE_KEY": "${localEnv:OCI_PRIVATE_KEY}"
+    }
+}
