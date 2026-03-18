@@ -63,3 +63,13 @@ Next steps (I can implement these on confirmation)
 Location
 --------
 This document: [docs/relocate-safety-and-makefile-plan.md](docs/relocate-safety-and-makefile-plan.md)
+
+Makefile flow
+------------
+```mermaid
+graph TD
+	DRY[make dry-run] --> BACKUP[make backup-main]
+	BACKUP --> APPLY[make apply CONFIRM=yes]
+	APPLY --> SMOKE[make smoke-test]
+	SMOKE --> COMMIT[git commit]
+```
