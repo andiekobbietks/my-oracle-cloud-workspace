@@ -77,6 +77,8 @@ References
 - Makefile: [Makefile](../Makefile)
 - Validator: [tools/validate_skill.py](../tools/validate_skill.py)
 
+- Institutional agents doc: [docs/agents-institutional-knowledge.md](docs/agents-institutional-knowledge.md)
+
 Workflow diagram
 ----------------
 ```mermaid
