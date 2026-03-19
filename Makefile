@@ -32,3 +32,11 @@ smoke-test:
 	if [ -z "$(SOURCE)" -o -z "$(DEST)" ]; then echo "Usage: make smoke-test SOURCE=src DEST=dest"; exit 2; fi
 	# Quick existence checks
 	if [ -e "$(DEST)" ]; then echo "OK: dest exists: $(DEST)"; else echo "FAIL: dest missing: $(DEST)"; exit 2; fi
+
+.PHONY: smoke-test-oci smoke-test-all
+
+smoke-test-oci:
+	@bash examples/oci/smoke-test.sh
+
+smoke-test-all: smoke-test-oci
+	@echo "All smoke-tests completed (non-destructive)."

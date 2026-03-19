@@ -1,0 +1,25 @@
+---
+title: Key Rotation Guide
+description: Safe, staged key and credential rotation patterns for CI and automation users.
+---
+
+# Key Rotation
+
+This document explains a safe, auditable workflow for rotating OCI API keys and other long-lived credentials used by CI or automation.
+
+## Principles
+
+- Always `dry_run` first and enumerate all consumers.
+- Use a canary (single consumer) to verify rotation before full rollout.
+- Propagate secrets into a vault and update consumers from the vault; do not commit credentials.
+
+## Example (dry-run)
+
+```bash
+bash examples/key-rotation/dry-run.sh ocid1.user.oc1..example
+```
+
+## Files of interest
+- `scripts/rotate-oci-key.sh`
+- `.github/skills/key-rotation/SKILL.md`
+- `examples/key-rotation/dry-run.sh`

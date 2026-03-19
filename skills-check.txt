@@ -1,0 +1,9 @@
+[38;5;145mChecking for skill updates...[0m
+
+[38;5;102mNo skills tracked in lock file.[0m
+[38;5;102mInstall skills with[0m [38;5;145mnpx skills add <package>[0m
+npm notice
+npm notice New major version of npm available! 10.8.2 -> 11.12.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.12.0
+npm notice To update run: npm install -g npm@11.12.0
+npm notice

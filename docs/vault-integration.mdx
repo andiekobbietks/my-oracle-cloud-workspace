@@ -1,0 +1,13 @@
+---
+title: Vault Integration Guide
+description: Best practices for storing and retrieving secrets used by skills and agents.
+---
+
+# Vault Integration
+
+Do not store secrets in this repository. Use a vault or secret store and reference secrets by path. Agents should only store pointers (vault paths) in outputs.
+
+Examples:
+
+- Use environment variables like `VAULT_ADDR` and `VAULT_TOKEN` in CI, not in code.
+- When an agent produces new credentials, it should call the `vault` API to persist them and return only the vault path.

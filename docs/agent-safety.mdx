@@ -1,0 +1,120 @@
+---
+title: Agent Safety — Preventive Controls for Agent Edits
+description: Comprehensive explanation of the repository-level preventive coding added to protect sensitive files and keep agent-driven automation safe.
+---
+
+# Agent Safety — Preventive Controls for Agent Edits
+
+This document explains the preventive changes added to this repository to stop automated agents (or accidental edits) from modifying sensitive files. It covers what was added, why, how it works, historical context, and operational guidance for humans and agents.
+
+Files added or updated (summary)
+
+- ` .github/skills/agent-customization/SKILL.md` — authoritative discovery entry that tightens `applyTo` globs and lists `do_not_edit_paths` (forbidden files). Agents should consult this before making changes.
+- ` tools/check_sensitive_pr.py` — CI helper that fails PRs touching sensitive paths.
+- ` .github/workflows/agent-safety.yml` — GitHub Action that runs the checker on PRs and blocks merges if sensitive files are modified.
+- ` docs/*.mdx`, ` examples/*`, ` Makefile` — supportive docs and non-destructive examples to give agents safe examples to follow.
+
+Why this was necessary — historical context
+
+1. Agent/LLM Adoption: As coding agents (LLMs, code assistants) became common, teams began using them to automate edits and migrations. Out-of-the-box agents can be over-eager and propose changes across a repo, including to sensitive infra scripts, CI pipelines, or credential-handling code.
+
+2. Retrieval-led workflows: Modern agent harnesses prefer repository-local context (skills, docs, example code). This is good — it reduces hallucinations — but it also means an agent that *does* have access to the repo can attempt edits based on local patterns.
+
+3. Need for defensive controls: Because mistakes in `scripts/rotate-oci-key.sh`, CI workflows, or `infra/` manifests can be catastrophic, defensive, repo-level controls are required to stop unauthorized or accidental changes.
+
+What the preventive controls do
+
+- Discovery-level guidance: `agent-customization` is a compact skill that tells agents what they *may* edit and, crucially, what they must not edit. It uses narrow `applyTo` globs instead of broad `**/*` rules.
+
+- Enforcement via CI: `tools/check_sensitive_pr.py` runs on pull requests via `agent-safety.yml`. It diffs the PR against `main` and rejects the PR if any changed file matches a sensitive glob.
+
+- Safe examples & docs: To reduce accidental needs to edit sensitive paths, the repo now includes `docs/*.mdx` and `examples/*` which provide canonical, non-destructive patterns the agent can follow safely.
+
+How the check works (technical details)
+
+1. On PR events, the workflow checks out the branch and runs `python3 tools/check_sensitive_pr.py`.
+2. The script fetches `origin/<base>` (the PR base branch), computes `git diff --name-only origin/<base>...HEAD`, and iterates changed files.
+3. Each changed path is tested against a list of sensitive glob patterns (e.g., `.github/workflows/**`, `scripts/rotate-oci-key.sh`, `infra/**`, `**/*.pem`). If any match, the script exits non-zero with a descriptive error, failing the job.
+
+Why this is effective
+
+- It prevents merges: CI failure blocks merging unless a human intervenes and removes or justifies the change.
+- It is explicit and auditable: the script prints each violating file and requires human review to proceed.
+- It preserves agent usefulness: non-sensitive edits (docs, examples, test code) proceed normally; agents still have high-value local context to work with.
+
+Operational guidance for maintainers (recommended workflow)
+
+1. If an agent needs to change a sensitive file, the agent must create a draft PR and include a justification in the description. A human reviewer should verify the change and, if intentional, either:
+   - Temporarily edit `tools/check_sensitive_pr.py` or the workflow to allow the change (not recommended), or
+   - Use a documented exception process: label the PR `agent-safety-exception` and have a maintainer run an approval workflow (see next section).
+
+2. Keep the `do_not_edit_paths` list in `agent-customization/SKILL.md` and the `SENSITIVE_PATTERNS` list in `tools/check_sensitive_pr.py` synchronized. They are the single source of truth for prevention.
+
+3. Regularly review the list: add or remove patterns as the project evolves (new infra, new scripts). Keep patterns conservative.
+
+4. Ensure `docs/` and `examples/` contain updated, canonical snippets and `Makefile` targets that agents can safely run (dry-run, smoke-test). This reduces the need to touch sensitive locations.
+
+How agents should behave (guidance for skill authors)
+
+- Always load ` .github/skills/agent-customization/SKILL.md` at session start (or when performing repo-level edits).
+- Respect `do_not_edit_paths`. If an agent detects a required change that matches a forbidden path, it should: produce a draft change proposal, include a clear checklist and smoke-tests, and request a human reviewer.
+- Use `examples/` and `docs/` as the first-source patterns. If a pattern requires modification, prefer updating docs/examples over touching infra scripts.
+
+Override & emergency processes
+
+If an intentional change to a sensitive path is required, follow this flow:
+
+1. Open a PR with the intended change and include a `Security/Change` section explaining why.
+2. Add the label `agent-safety-exception` and request approval from a repository owner.
+3. A repository owner runs the change in a fork or a protected environment, verifies smoke-tests (`make smoke-test-all`), and merges only after manual verification.
+
+Automated allowlist option (optional future improvement)
+
+We can add a controlled allowlist to the workflow that checks for a signed approval (e.g., a PR label plus a maintainer signature). If you want this, I can add a second job that:
+
+- Waits for a maintainer to add `agent-safety-allow` label, then re-runs the checker in an allowlist mode and permits the merge.
+
+Limitations & residual risks
+
+- Agents that run outside of CI and push directly to `main` (bypassing PR checks) are not prevented — enforce branch protection rules (require PRs and passing checks) to close this gap.
+- The checker uses filename globs; false negatives are possible if a sensitive pattern is missed. Regular audits are important.
+
+Commands & verification (how to run locally)
+
+Run the sensitive-file checker locally to see if a working tree would fail a PR check:
+
+```bash
+python3 tools/check_sensitive_pr.py
+```
+
+Run the smoke-tests and docs validation used by agents:
+
+```bash
+make validate-skill FILE=.github/skills/oci-bootstrap/SKILL.md
+make smoke-test-oci
+```
+
+Maintenance checklist (who to notify / periodic tasks)
+
+- Quarterly: review `do_not_edit_paths` and `SENSITIVE_PATTERNS`.
+- After any infra change: update `docs/` and `examples/` with canonical usage.
+- On PRs modifying skill docs: ensure `AGENTS.md` index still reflects discovery pointers.
+
+Appendix A — Sensitive patterns currently enforced
+
+See `tools/check_sensitive_pr.py` for the authoritative pattern list. Example entries include:
+
+- `.github/workflows/**`
+- `scripts/rotate-oci-key.sh`
+- `infra/**`, `terraform/**`
+- `**/*.pem`, `**/*.key`, `.env*`
+
+Appendix B — Files added by this initiative
+
+- `.github/skills/agent-customization/SKILL.md`
+- `tools/check_sensitive_pr.py`
+- `.github/workflows/agent-safety.yml`
+- `docs/oci-bootstrap.mdx`, `docs/key-rotation.mdx`, `docs/relocate-file.mdx`, `docs/run-relocate.mdx`, `docs/smoke-test.mdx`, `docs/vault-integration.mdx`
+- `examples/oci/smoke-test.sh`, `examples/key-rotation/dry-run.sh`, `examples/relocate/dry-run.sh`
+
+If you want, I will also draft a short `README` snippet for maintainers describing the exception process and add an automated allowlist job. Which would you prefer next?

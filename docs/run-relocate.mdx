@@ -1,0 +1,14 @@
+---
+title: Run Relocate Guide
+description: How to run the Makefile relocate targets safely and audibly.
+---
+
+# Run Relocate
+
+This doc explains how the `run-relocate` skill maps inputs to `make` targets and expected verification steps.
+
+## Typical flow
+
+1. Agent runs dry-run: `make dry-run SOURCE=.devcontainer/README.md DEST=./`
+2. Human reviews plan and runs: `make apply SOURCE=.devcontainer/README.md DEST=./ CONFIRM=yes`
+3. Run smoke-tests: `make smoke-test SOURCE=... DEST=...`

@@ -1,0 +1,35 @@
+---
+title: OCI Bootstrap Guide
+description: "Idempotent, dry-run-first OCI bootstrap patterns for this repository."
+---
+
+# OCI Bootstrap (overview)
+
+This guide documents how to safely bootstrap a minimal OCI environment for demos and CI using the repository tools.
+
+## Quick checks (non-destructive)
+
+- Ensure `oci` CLI is on `PATH`.
+- Set `TENANCY_OCID` and a valid profile in `~/.oci/config` for dry-run listings.
+
+## Dry-run example
+
+Run the included example (safe):
+
+```bash
+bash scripts/bootstrap-example.sh || true
+```
+
+## Makefile targets
+
+- `make smoke-test-oci` — runs the small, non-destructive smoke checks for OCI examples.
+
+## Where agents should look
+
+- `scripts/bootstrap-example.sh`
+- `.github/skills/oci-bootstrap/SKILL.md`
+- `examples/oci/smoke-test.sh`
+
+## Safety notes
+
+Never commit secrets. Use `vault-integration` guidance to store OCIDs, API keys and private keys outside the repo.

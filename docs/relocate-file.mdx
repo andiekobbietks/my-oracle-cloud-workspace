@@ -1,0 +1,20 @@
+---
+title: Relocate File Guide
+description: Patterns and verification for moving repository files safely.
+---
+
+# Relocate File
+
+Use this guide in combination with the `relocate-file` and `run-relocate` skills to preview and apply file moves.
+
+## Dry-run
+
+```bash
+make dry-run SOURCE=docs/README.md DEST=docs/archive/README.md
+```
+
+## Files of interest
+
+- `scripts/relocate-dryrun.sh`
+- `scripts/relocate-apply.sh`
+- `.github/skills/relocate-file/SKILL.md`
