@@ -1,6 +1,6 @@
 ﻿{
     "name": "OCI Management Space",
-    "image": "mcr.microsoft.com/devcontainers/python:3",
+    "image": "mcr.microsoft.com/devcontainers/python:3.12-bookworm",
     "features": {
         "ghcr.io/devcontainers/features/common-utils:1": {}    },
     "customizations": {
