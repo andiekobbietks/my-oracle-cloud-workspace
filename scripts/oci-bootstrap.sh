@@ -44,16 +44,53 @@ for r in "${REQS[@]}"; do
   [ -z "$r" ] && continue
   if [ "$r" = "vcn" ]; then
     COUNT=$(oci network vcn list --compartment-id "$COMPARTMENT" --query "data | length(@)" --raw-output 2>/dev/null || echo 0)
+    COUNT=${COUNT:-0}
     if [ "$FIRST" = true ]; then FIRST=false; else echo "," >> "$REPORT"; fi
     echo "  {\"resource\": \"vcn\", \"existing\": $COUNT }" >> "$REPORT"
   elif [ "$r" = "compute" ]; then
     COUNT=$(oci compute instance list --compartment-id "$COMPARTMENT" --query "data | length(@)" --raw-output 2>/dev/null || echo 0)
+    COUNT=${COUNT:-0}
     if [ "$FIRST" = true ]; then FIRST=false; else echo "," >> "$REPORT"; fi
     echo "  {\"resource\": \"compute\", \"existing\": $COUNT }" >> "$REPORT"
   elif [ "$r" = "vault" ]; then
-    COUNT=$(oci vault vault list --compartment-id "$COMPARTMENT" --query "data | length(@)" --raw-output 2>/dev/null || echo 0)
-    if [ "$FIRST" = true ]; then FIRST=false; else echo "," >> "$REPORT"; fi
-    echo "  {\"resource\": \"vault\", \"existing\": $COUNT }" >> "$REPORT"
+    # Probe vaults with multiple fallbacks and robust parsing
+    VAULT_OUT=""
+    for CMD in \
+      "oci vault vault list --compartment-id \"$COMPARTMENT\" --query \"data | length(@)\" --raw-output" \
+      "oci kms management vault list --compartment-id \"$COMPARTMENT\" --query \"data | length(@)\" --raw-output" \
+      "oci vault list --compartment-id \"$COMPARTMENT\" --query \"data | length(@)\" --raw-output"; do
+      VAULT_OUT=$(eval $CMD 2>&1 || true)
+      # if numeric, accept
+      if [[ "$VAULT_OUT" =~ ^[0-9]+$ ]]; then
+        break
+      fi
+    done
+
+    if [[ "$VAULT_OUT" =~ ^[0-9]+$ ]]; then
+      COUNT=$VAULT_OUT
+      if [ "$FIRST" = true ]; then FIRST=false; else echo "," >> "$REPORT"; fi
+      echo "  {\"resource\": \"vault\", \"existing\": $COUNT }" >> "$REPORT"
+    else
+      # Try JSON output + jq/python fallback to count items
+      JSON_OUT=$(oci kms management vault list --compartment-id "$COMPARTMENT" --output json 2>/dev/null || true)
+      if [ -n "$JSON_OUT" ]; then
+        if command -v jq >/dev/null 2>&1; then
+          COUNT=$(echo "$JSON_OUT" | jq '.data | length' 2>/dev/null || true)
+        else
+          COUNT=$(python3 -c 'import sys,json;print(len(json.load(sys.stdin).get("data",[])))' <<< "$JSON_OUT" 2>/dev/null || true)
+        fi
+      fi
+
+      if [[ "$COUNT" =~ ^[0-9]+$ ]]; then
+        if [ "$FIRST" = true ]; then FIRST=false; else echo "," >> "$REPORT"; fi
+        echo "  {\"resource\": \"vault\", \"existing\": $COUNT }" >> "$REPORT"
+      else
+        # sanitize output for JSON (single-line, escape quotes)
+        SAN=$(echo "$VAULT_OUT" | tr '\n' ' ' | sed 's/"/\\"/g')
+        if [ "$FIRST" = true ]; then FIRST=false; else echo "," >> "$REPORT"; fi
+        echo "  {\"resource\": \"vault\", \"note\": \"probe-failed: $SAN\" }" >> "$REPORT"
+      fi
+    fi
   else
     # generic discovery
     if [ "$FIRST" = true ]; then FIRST=false; else echo "," >> "$REPORT"; fi

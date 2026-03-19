@@ -33,6 +33,9 @@ smoke-test:
 	# Quick existence checks
 	if [ -e "$(DEST)" ]; then echo "OK: dest exists: $(DEST)"; else echo "FAIL: dest missing: $(DEST)"; exit 2; fi
 
+check-shapes:
+	python3 tools/check_shapes_pr.py --base ${BASE_REF:-origin/main}
+
 .PHONY: smoke-test-oci smoke-test-all
 
 smoke-test-oci:

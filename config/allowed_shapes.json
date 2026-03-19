@@ -1,0 +1,8 @@
+{
+  "allowed_shapes": [
+    "VM.Standard.A1.Flex",
+    "VM.Standard.E2.1.Micro",
+    "VM.Standard.E3.Flex"
+  ],
+  "notes": "Edit this list to match Always Free-eligible shapes for your region. CI will reject shapes not on this list."
+}
