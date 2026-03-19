@@ -1,0 +1,28 @@
+name: OCI Bootstrap Dry-run
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  dry-run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install OCI CLI
+        run: |
+          set -e
+          sudo apt-get update -y
+          sudo apt-get install -y python3-pip
+          python3 -m pip install --user oci
+          export PATH="$HOME/.local/bin:$PATH"
+      - name: Dry-run: check free resources (if OCI configured)
+        run: |
+          if oci --version >/dev/null 2>&1; then
+            echo "OCI CLI available, attempting audit"
+            bash scripts/check-free-resources.sh "$COMPARTMENT"
+          else
+            echo "OCI CLI not available or not configured; skipping audit"
+          fi
+        env:
+          COMPARTMENT: ${{ vars.OCI_COMPARTMENT || '' }}
