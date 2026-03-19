@@ -1,16 +1,7 @@
 ---
 name: agent-customization
 title: Agent Customization
-description: 'Create, update, review, fix, or debug VS Code agent customization files.
-  Prevent agents
-
-  from making unsafe edits to sensitive repository files by restricting `applyTo`
-  and
-
-  declaring explicit `do_not_edit_paths` that agents must never modify without human
-  review.
-
-  '
+description: 'Create, update, review, fix, or debug VS Code agent customization files. Example trigger: "Run agent-customization"'
 applyTo:
 - .github/**
 - .github/skills/**
@@ -24,7 +15,7 @@ do_not_edit_paths:
 - scripts/install-oci-noninteractive.sh
 - infra/**
 - terraform/**
-- secrets/**
+- \"secrets/**\"
 - '**/*.pem'
 - '**/*.key'
 - .env*
@@ -38,18 +29,7 @@ do_not_edit_paths:
 - kms/**
 - keys/**
 - ci/**
-usage: 'Use this skill to author or modify agent-facing customization files (SKILL.md,
-  .agent.md,
-
-  prompts/instructions). Agents must not edit files listed in `do_not_edit_paths`
-  without
-
-  explicit human approval. When a sensitive change is required, produce a draft and
-  open a
-
-  ticket for manual review.
-
-  '
+usage: 'Use this skill to author or modify agent-facing customization files (SKILL.md, .agent.md, prompts/instructions). Agents must not edit files listed in `do_not_edit_paths` without explicit human approval.'
 related:
 - AGENTS.md
 - .github/skills/secret-detection/SKILL.md
