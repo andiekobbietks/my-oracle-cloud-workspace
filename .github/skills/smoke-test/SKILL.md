@@ -1,35 +1,59 @@
 ---
 title: smoke-test
 name: smoke-test
-description: "Quick verification checks to validate critical paths after changes. Trigger example: \"Run smoke-test target=service/api\""
-summary: Fast, deterministic checks (connectivity, health endpoints, auth) to validate changes
+description: 'Quick verification checks to validate critical paths after changes.
+  Trigger example: "Run smoke-test target=service/api"'
+summary: Fast, deterministic checks (connectivity, health endpoints, auth) to validate
+  changes
 tags:
-  - smoke
-  - test
-  - verify
-usage: |
-  Run smoke-test to perform a small set of checks against newly provisioned resources. Example: `target: service/api`, `command: curl -sf http://localhost:8080/health`
+- smoke
+- test
+- verify
+usage: 'Run smoke-test to perform a small set of checks against newly provisioned
+  resources. Example: `target: service/api`, `command: curl -sf http://localhost:8080/health`
+
+  '
 applyTo:
-  - tests/**
-  - scripts/**
-  - .github/workflows/**
+- tests/**
+- scripts/**
+- .github/workflows/**
 inputs:
-  - name: target
-    required: true
-    description: Resource or endpoint to validate
-  - name: command
-    required: true
-    description: Shell command or script to run as the test
-  - name: timeout
-    required: false
-    default: 30s
-    description: Maximum duration per test
+- name: target
+  required: true
+  description: Resource or endpoint to validate
+- name: command
+  required: true
+  description: Shell command or script to run as the test
+- name: timeout
+  required: false
+  default: 30s
+  description: Maximum duration per test
 outputs:
-  - name: status
-    description: pass/fail results and logs
+- name: status
+  description: pass/fail results and logs
 related:
-  - .github/skills/oci-bootstrap/SKILL.md
+- .github/skills/oci-bootstrap/SKILL.md
+do_not_edit_paths:
+- .github/workflows/**
+- .github/actions/**
+- .github/skills/**
+- infra/**
+- terraform/**
+- scripts/**
+- secrets/**
+- credentials/**
+- cloud-credentials/**
+- '**/*.pem'
+- '**/*.key'
+- '**/*.p12'
+- .env*
+- .docker/config.json
+- kms/**
+- keys/**
+- ci/**
 ---
+Agent guidance: Do not modify files listed in `do_not_edit_paths` without explicit human approval; produce a draft and open a ticket.
+
 
 Purpose
 Execute minimal, fast checks that validate whether a service or change is functioning and reachable after deployment or configuration changes.

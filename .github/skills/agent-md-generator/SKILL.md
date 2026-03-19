@@ -2,34 +2,51 @@
 name: agent-md-generator
 title: Agent MD Generator
 summary: Generate .agent.md files from interactive templates.
-description: >-
-  Interactive skill that scaffolds `.agent.md` (agent metadata) files using a
-  small questionnaire and reusable templates. Example invocation: "Generate
-  agent.md for infra-deployer". Designed for maintainers who want
-  consistent agent metadata files created via prompts or automation.
+description: 'Interactive skill that scaffolds `.agent.md` (agent metadata) files
+  using a small questionnaire and reusable templates. Example invocation: "Generate
+  agent.md for infra-deployer". Designed for maintainers who want consistent agent
+  metadata files created via prompts or automation.'
 applyTo:
-  - repository
-usage: |
-  Trigger examples:
-    - "Generate agent.md for payment-worker"
-    - "Create an agent file named build-agent (dry-run)"
+- repository
+usage: "Trigger examples:\n  - \"Generate agent.md for payment-worker\"\n  - \"Create\
+  \ an agent file named build-agent (dry-run)\"\n"
 inputs:
-  - name: agent_name
-    type: string
-    description: "Short identifier for the agent (e.g., build-worker)"
-  - name: description
-    type: string
-    description: "One-line description of the agent's purpose"
-  - name: template_choice
-    type: string
-    description: "Template to use (default: standard)"
+- name: agent_name
+  type: string
+  description: Short identifier for the agent (e.g., build-worker)
+- name: description
+  type: string
+  description: One-line description of the agent's purpose
+- name: template_choice
+  type: string
+  description: 'Template to use (default: standard)'
 outputs:
-  - name: path
-    type: string
-    description: "Path to the generated `.agent.md` file"
+- name: path
+  type: string
+  description: Path to the generated `.agent.md` file
 related:
-  - .github/skills/agent-customization/SKILL.md
+- .github/skills/agent-customization/SKILL.md
+do_not_edit_paths:
+- .github/workflows/**
+- .github/actions/**
+- .github/skills/**
+- infra/**
+- terraform/**
+- scripts/**
+- secrets/**
+- credentials/**
+- cloud-credentials/**
+- '**/*.pem'
+- '**/*.key'
+- '**/*.p12'
+- .env*
+- .docker/config.json
+- kms/**
+- keys/**
+- ci/**
 ---
+Agent guidance: Do not modify files listed in `do_not_edit_paths` without explicit human approval; produce a draft and open a ticket.
+
 
 This SKILL generates an `.agent.md` file from a small interactive flow or
 from provided inputs (for automation). It avoids storing credentials and is

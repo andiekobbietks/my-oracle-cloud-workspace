@@ -1,36 +1,60 @@
 ---
 title: oci-bootstrap
 name: oci-bootstrap
-description: 'Idempotent Always Free-aware OCI resource bootstrap; trigger: "Run oci-bootstrap for demo"'
-summary: Create minimal OCI resources (compartments, VCN, vaults) with idempotent plans and dry-run support
+description: 'Idempotent Always Free-aware OCI resource bootstrap; trigger: "Run oci-bootstrap
+  for demo"'
+summary: Create minimal OCI resources (compartments, VCN, vaults) with idempotent
+  plans and dry-run support
 tags:
-  - oci
-  - bootstrap
-  - terraform
-usage: |
-  Use this skill to provision minimal OCI resources for demos or CI smoke-tests. Always run in `dry_run` first.
+- oci
+- bootstrap
+- terraform
+usage: 'Use this skill to provision minimal OCI resources for demos or CI smoke-tests.
+  Always run in `dry_run` first.
+
+  '
 applyTo:
-  - terraform/**
-  - infra/**
-  - scripts/**
+- terraform/**
+- infra/**
+- scripts/**
 inputs:
-  - name: compartment
-    required: true
-    description: Target compartment OCID or name
-  - name: resources
-    required: false
-    description: List of resources to create (vcn, subnet, vault, gateway)
-  - name: dry_run
-    required: false
-    default: true
-    description: If true, show a plan without applying changes
+- name: compartment
+  required: true
+  description: Target compartment OCID or name
+- name: resources
+  required: false
+  description: List of resources to create (vcn, subnet, vault, gateway)
+- name: dry_run
+  required: false
+  default: true
+  description: If true, show a plan without applying changes
 outputs:
-  - name: plan
-    description: A human-readable plan of intended changes
+- name: plan
+  description: A human-readable plan of intended changes
 related:
-  - .github/skills/smoke-test/SKILL.md
-  - docs/skills/oci-bootstrap.md
+- .github/skills/smoke-test/SKILL.md
+- docs/skills/oci-bootstrap.md
+do_not_edit_paths:
+- .github/workflows/**
+- .github/actions/**
+- .github/skills/**
+- infra/**
+- terraform/**
+- scripts/**
+- secrets/**
+- credentials/**
+- cloud-credentials/**
+- '**/*.pem'
+- '**/*.key'
+- '**/*.p12'
+- .env*
+- .docker/config.json
+- kms/**
+- keys/**
+- ci/**
 ---
+Agent guidance: Do not modify files listed in `do_not_edit_paths` without explicit human approval; produce a draft and open a ticket.
+
 
 Purpose
 Automate creation and initial configuration of a minimal OCI environment needed to run or test repository workloads. Provides idempotent behavior, explicit dry-run plans, and guidance for secure handling of outputs and credentials.

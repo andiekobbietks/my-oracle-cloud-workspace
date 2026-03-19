@@ -1,33 +1,56 @@
 ---
 title: key-rotation
 name: key-rotation
-description: "Rotate OCI API credentials and long-lived keys safely. Trigger example: \"Rotate keys for ci-runner\""
-summary: Rotate API keys and other long-lived credentials with dry-run and staged verification
+description: 'Rotate OCI API credentials and long-lived keys safely. Trigger example:
+  "Rotate keys for ci-runner"'
+summary: Rotate API keys and other long-lived credentials with dry-run and staged
+  verification
 tags:
-  - key-rotation
-  - security
-  - oci
-usage: |
-  Orchestrate credential replacement with `dry_run`, staged rollout, and verification.
+- key-rotation
+- security
+- oci
+usage: 'Orchestrate credential replacement with `dry_run`, staged rollout, and verification.
+
+  '
 applyTo:
-  - scripts/**
-  - rotate-*.sh
-  - docs/**
+- scripts/**
+- rotate-*.sh
+- docs/**
 inputs:
-  - name: user_ocid
-    required: true
-    description: OCID of the automation user to rotate credentials for
-  - name: dry_run
-    required: false
-    default: true
-    description: If true, show a plan without applying changes
+- name: user_ocid
+  required: true
+  description: OCID of the automation user to rotate credentials for
+- name: dry_run
+  required: false
+  default: true
+  description: If true, show a plan without applying changes
 outputs:
-  - name: rotation_plan
-    description: Planned steps and verification checks for the rotation
+- name: rotation_plan
+  description: Planned steps and verification checks for the rotation
 related:
-  - .github/skills/smoke-test/SKILL.md
-  - docs/skills/key-rotation.md
+- .github/skills/smoke-test/SKILL.md
+- docs/skills/key-rotation.md
+do_not_edit_paths:
+- .github/workflows/**
+- .github/actions/**
+- .github/skills/**
+- infra/**
+- terraform/**
+- scripts/**
+- secrets/**
+- credentials/**
+- cloud-credentials/**
+- '**/*.pem'
+- '**/*.key'
+- '**/*.p12'
+- .env*
+- .docker/config.json
+- kms/**
+- keys/**
+- ci/**
 ---
+Agent guidance: Do not modify files listed in `do_not_edit_paths` without explicit human approval; produce a draft and open a ticket.
+
 
 Purpose
 Provide a safe, auditable workflow to rotate credentials and keys used by the repository or CI pipelines. Supports dry-run planning, staged rollout, propagation to vaults or credential stores, and rollback guidance.

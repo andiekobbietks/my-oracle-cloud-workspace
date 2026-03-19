@@ -1,19 +1,41 @@
 ---
 name: run-relocate
-description: |
-  Skill wrapper to run the repository `Makefile` relocate targets in a controlled, auditable way.
-  Trigger example: "Run relocate source=.devcontainer/README.md dest=./ (dry-run)".
-  Enforces `dry_run` by default and requires explicit confirmation to `apply`.
-usage: |
-  Trigger examples:
-    - "Run relocate: source=.devcontainer/README.md dest=./ (dry-run)"
-    - "Run relocate --apply source=README.md dest=docs/ confirm_phrase=yes"
-applyTo:
-  - Makefile
-  - scripts/**
-  - .github/workflows/**
+description: 'Skill wrapper to run the repository `Makefile` relocate targets in a
+  controlled, auditable way.
 
+  Trigger example: "Run relocate source=.devcontainer/README.md dest=./ (dry-run)".
+
+  Enforces `dry_run` by default and requires explicit confirmation to `apply`.
+
+  '
+usage: "Trigger examples:\n  - \"Run relocate: source=.devcontainer/README.md dest=./\
+  \ (dry-run)\"\n  - \"Run relocate --apply source=README.md dest=docs/ confirm_phrase=yes\"\
+  \n"
+applyTo:
+- Makefile
+- scripts/**
+- .github/workflows/**
+do_not_edit_paths:
+- .github/workflows/**
+- .github/actions/**
+- .github/skills/**
+- infra/**
+- terraform/**
+- scripts/**
+- secrets/**
+- credentials/**
+- cloud-credentials/**
+- '**/*.pem'
+- '**/*.key'
+- '**/*.p12'
+- .env*
+- .docker/config.json
+- kms/**
+- keys/**
+- ci/**
 ---
+Agent guidance: Do not modify files listed in `do_not_edit_paths` without explicit human approval; produce a draft and open a ticket.
+
 
 # Run Relocate (Skill)
 

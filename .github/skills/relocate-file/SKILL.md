@@ -1,15 +1,42 @@
 ---
 name: relocate-file
-description: |
-  Skill to relocate one or more files (docs, README, CONTRIBUTING, etc.) within a repository.
-  Supports dry-run, globs, `git mv` for history preservation, optional symlink/redirect creation,
+description: 'Skill to relocate one or more files (docs, README, CONTRIBUTING, etc.)
+  within a repository.
+
+  Supports dry-run, globs, `git mv` for history preservation, optional symlink/redirect
+  creation,
+
   and automated commit/PR creation when requested.
-usage: |
-  Example: `source: .devcontainer/README.md`, `dest: ./`, `preserve_history: true`
+
+  '
+usage: 'Example: `source: .devcontainer/README.md`, `dest: ./`, `preserve_history:
+  true`
+
+  '
 applyTo:
-  - .devcontainer/**
-  - docs/**
+- .devcontainer/**
+- docs/**
+do_not_edit_paths:
+- .github/workflows/**
+- .github/actions/**
+- .github/skills/**
+- infra/**
+- terraform/**
+- scripts/**
+- secrets/**
+- credentials/**
+- cloud-credentials/**
+- '**/*.pem'
+- '**/*.key'
+- '**/*.p12'
+- .env*
+- .docker/config.json
+- kms/**
+- keys/**
+- ci/**
 ---
+Agent guidance: Do not modify files listed in `do_not_edit_paths` without explicit human approval; produce a draft and open a ticket.
+
 
 # Relocate File(s)
 
