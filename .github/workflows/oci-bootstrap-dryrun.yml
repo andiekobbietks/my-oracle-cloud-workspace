@@ -16,7 +16,7 @@ jobs:
           sudo apt-get install -y python3-pip
           python3 -m pip install --user oci
           export PATH="$HOME/.local/bin:$PATH"
-      - name: Dry-run: check free resources (if OCI configured)
+      - name: "Dry-run: check free resources (if OCI configured)"
         run: |
           if oci --version >/dev/null 2>&1; then
             echo "OCI CLI available, attempting audit"
