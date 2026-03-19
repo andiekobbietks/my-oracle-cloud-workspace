@@ -10,6 +10,7 @@ This project evolved from a simple management shell into a **Repeatable Infrastr
 
 - See [docs/README.md](docs/README.md) for doc-as-code guidelines.
 - See [docs/symbolic-links.md](docs/symbolic-links.md) for how and why symbolic links are used in this repo, especially for safe file relocation and compatibility.
+ - Agents practice guide: [docs/agents-practice.md](docs/agents-practice.md)
 
 ## How it Works
 1. **GitHub Secrets** act as the "Vault" for OCI API keys.
