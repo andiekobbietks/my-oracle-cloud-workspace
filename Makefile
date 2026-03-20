@@ -39,7 +39,8 @@ check-shapes:
 .PHONY: docs-check
 
 docs-check:
-	bash scripts/docs/check_docs.sh
+	# For CI/strict checks set FAIL_ON_MISSING=1 so the target fails on missing refs.
+	FAIL_ON_MISSING=1 bash scripts/docs/check_docs.sh
 
 .PHONY: smoke-test-oci smoke-test-all
 
