@@ -1,1 +1,7 @@
+{
+  // Workspace preferences to suggest Chrome for browser tools. Users can override locally.
+  "open-in-browser.default": "chrome",
+  "browser-preview.chromeExecutable": "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
+  "liveServer.settings.CustomBrowser": "chrome"
+}
 {}
