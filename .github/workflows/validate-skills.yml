@@ -1,9 +1,12 @@
 name: Validate SKILLs
 on:
   push:
-    branches: [ main ]
+    # Only run on pushes that change SKILL definitions to avoid noisy runs on every
+    # push to `main`.
+    paths: [ '.github/skills/**' ]
   pull_request:
     paths: [ '.github/skills/**', '.github/**' ]
+  workflow_dispatch: {}
 
 jobs:
   validate:

@@ -1,8 +1,9 @@
 name: OIDC + Vault CI (example)
 on:
+  # This workflow touches secrets and external Vault instances. Make it manual
+  # only to avoid accidental automatic runs that fail when secrets or Vault are
+  # not configured in a given environment.
   workflow_dispatch: {}
-  push:
-    branches: [ main ]
 
 jobs:
   oci-vault:
