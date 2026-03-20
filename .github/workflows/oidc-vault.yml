@@ -45,15 +45,15 @@ jobs:
       - name: Configure minimal OCI config
         run: |
           mkdir -p ~/.oci
-          cat > ~/.oci/config <<'EOF'
-[DEFAULT]
-tenancy=${{ secrets.OCI_TENANCY }}
-user=${{ secrets.OCI_USER }}
-fingerprint=${{ secrets.OCI_FINGERPRINT }}
-key_file=~/.oci/oci_api_key.pem
-region=${{ secrets.OCI_REGION }}
-EOF
-          chmod 600 ~/.oci/config
+            cat > ~/.oci/config <<'EOF'
+            [DEFAULT]
+            tenancy=${{ secrets.OCI_TENANCY }}
+            user=${{ secrets.OCI_USER }}
+            fingerprint=${{ secrets.OCI_FINGERPRINT }}
+            key_file=~/.oci/oci_api_key.pem
+            region=${{ secrets.OCI_REGION }}
+            EOF
+            chmod 600 ~/.oci/config
 
       - name: Run example OCI command
         run: |
