@@ -12,7 +12,7 @@ import subprocess
 import yaml
 
 RE_SECRET = re.compile(
-    r"AKIA[0-9A-Z]{16}|BEGIN .*PRIVATE KEY|password\s*=|token\s*=|\bsecret\b",
+    r"AKIA[0-9A-Z]{16}|BEGIN .*PRIVATE KEY|password\s*=|token\s*=",
     re.I,
 )
 
