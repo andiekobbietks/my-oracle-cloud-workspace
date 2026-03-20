@@ -3,7 +3,7 @@
 TL;DR
 - Skills: best for multi-step, reusable workflows that bundle prompts, templates, scripts, and docs.
 - MCPs: use when you must integrate external systems, datasets, or deterministic APIs into an agent workflow.
-- Follow simple frontmatter rules, meaningful `description`, scoped `applyTo` globs, and include examples/tests.
+- Follow simple frontmatter rules, meaningful `description`, scoped `applyTo` globs, and include examples/tests
 
 ## Recommendations
 
