@@ -1,0 +1,21 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Start MCP (bash)",
+      "type": "shell",
+      "command": "bash",
+      "args": ["-c", "./scripts/start-mcp.sh 9222 \"$HOME/.config/google-chrome/Profile 1\""],
+      "problemMatcher": [],
+      "presentation": { "panel": "shared" }
+    },
+    {
+      "label": "Start MCP (PowerShell)",
+      "type": "process",
+      "command": "powershell",
+      "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", ".\\scripts\\start-mcp.ps1 -Port 9222 -ProfilePath \"$env:LOCALAPPDATA\\Google\\Chrome\\User Data\\Profile 1\""],
+      "problemMatcher": [],
+      "presentation": { "panel": "shared" }
+    }
+  ]
+}
