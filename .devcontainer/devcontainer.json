@@ -1,4 +1,12 @@
 ﻿{
+  "name": "my-oracle-cloud-workspace devcontainer",
+  "containerEnv": {
+    "OCI_API_KEY_FILE": "/home/vscode/.oci/oci_api_key.pem"
+  },
+  "postCreateCommand": "mkdir -p /home/vscode/.oci && if [ -n \"$OCI_API_KEY_PRIVATE\" ]; then printf '%s' \"$OCI_API_KEY_PRIVATE\" > /home/vscode/.oci/oci_api_key.pem && chmod 600 /home/vscode/.oci/oci_api_key.pem; else echo 'OCI_API_KEY_PRIVATE not set; skip writing key'; fi",
+  "postStartCommand": "if [ -f /home/vscode/.oci/oci_api_key.pem ]; then echo 'OCI API key present at /home/vscode/.oci/oci_api_key.pem'; else echo 'OCI API key missing'; fi"
+}
+{
     "name": "OCI Management Space",
     "image": "mcr.microsoft.com/devcontainers/python:3.12-bookworm",
     "features": {
