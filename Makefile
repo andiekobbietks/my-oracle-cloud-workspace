@@ -36,6 +36,11 @@ smoke-test:
 check-shapes:
 	python3 tools/check_shapes_pr.py --base ${BASE_REF:-origin/main}
 
+.PHONY: docs-check
+
+docs-check:
+	bash scripts/docs/check_docs.sh
+
 .PHONY: smoke-test-oci smoke-test-all
 
 smoke-test-oci:
