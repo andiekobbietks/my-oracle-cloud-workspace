@@ -1,0 +1,28 @@
+name: Export OCI key (manual)
+on:
+  workflow_dispatch: {}
+
+jobs:
+  export-key:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Create export directory
+        run: mkdir -p export
+
+      - name: Write OCI key to file from repo secret
+        run: |
+          printf '%s' "${{ secrets.OCI_PRIVATE_KEY }}" > export/oci_api_key.pem
+          chmod 600 export/oci_api_key.pem
+
+      - name: Upload key artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: oci-key
+          path: export/oci_api_key.pem
+
+      - name: Securely remove local copy
+        if: always()
+        run: |
+          shred -u export/oci_api_key.pem || rm -f export/oci_api_key.pem || true
