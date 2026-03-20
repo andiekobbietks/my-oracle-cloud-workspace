@@ -1,0 +1,64 @@
+name: OIDC + Vault CI (example)
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [ main ]
+
+jobs:
+  oci-vault:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Request OIDC token (GitHub Actions)
+        id: id_token
+        run: |
+          echo "ID_TOKEN<<$(curl -fsSL --fail \"$ACTIONS_ID_TOKEN_REQUEST_URL\" -H \"Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN\")" >> $GITHUB_OUTPUT
+
+      - name: Vault login using OIDC
+        id: vault_login
+        env:
+          VAULT_ADDR: ${{ secrets.VAULT_ADDR }}
+        run: |
+          set -euo pipefail
+          ID_TOKEN=$(jq -r '.value' <<<"${{ steps.id_token.outputs.ID_TOKEN }}")
+          VAULT_RESP=$(curl -sS -X POST "$VAULT_ADDR/v1/auth/jwt/login" -d '{"jwt":"'"$ID_TOKEN"'","role":"github-actions"}')
+          VAULT_TOKEN=$(jq -r .auth.client_token <<<"$VAULT_RESP")
+          echo "VAULT_TOKEN=$VAULT_TOKEN" >> $GITHUB_ENV
+
+      - name: Fetch OCI private key from Vault
+        env:
+          VAULT_ADDR: ${{ secrets.VAULT_ADDR }}
+          VAULT_TOKEN: ${{ env.VAULT_TOKEN }}
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.oci
+          KEY_JSON=$(curl -sS -H "X-Vault-Token: $VAULT_TOKEN" "$VAULT_ADDR/v1/secret/data/oci/keys/my-repo")
+          echo "$KEY_JSON" | jq -r .data.data.private_key > ~/.oci/oci_api_key.pem
+          chmod 600 ~/.oci/oci_api_key.pem
+
+      - name: Configure minimal OCI config
+        run: |
+          mkdir -p ~/.oci
+          cat > ~/.oci/config <<'EOF'
+[DEFAULT]
+tenancy=${{ secrets.OCI_TENANCY }}
+user=${{ secrets.OCI_USER }}
+fingerprint=${{ secrets.OCI_FINGERPRINT }}
+key_file=~/.oci/oci_api_key.pem
+region=${{ secrets.OCI_REGION }}
+EOF
+          chmod 600 ~/.oci/config
+
+      - name: Run example OCI command
+        run: |
+          oci os ns get
+
+      - name: Cleanup key
+        if: always()
+        run: |
+          shred -u ~/.oci/oci_api_key.pem || rm -f ~/.oci/oci_api_key.pem || true

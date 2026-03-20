@@ -34,6 +34,7 @@ outputs:
 related:
 - .github/skills/smoke-test/SKILL.md
 - docs/skills/oci-bootstrap.md
+ - docs/oidc-and-vault.md
 do_not_edit_paths:
 - .github/workflows/**
 - .github/actions/**
@@ -69,6 +70,11 @@ Steps
 Notes
 - Always prefer `dry_run` and require explicit human confirmation for destructive actions.
 - Do not write private keys or raw credentials into repository files; use a vault.
+
+- See `docs/oidc-and-vault.md` for long-term secure alternatives (OIDC federation,
+  Vault broker patterns, org-level secrets, and environment gating). Agents performing
+  bootstrap operations should consult that guide and prefer Vault-backed flows when
+  writing outputs or storing credentials.
 
 Completion criteria
 - Requested OCI resources exist and pass basic reachability checks; access details stored securely and documented.
