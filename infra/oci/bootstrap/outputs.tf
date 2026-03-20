@@ -1,14 +1,14 @@
 output "vcn_id" {
-  description = "VCN OCID (once created)"
-  value       = try(oci_core_vcn.this.id, "")
+  description = "VCN OCID"
+  value       = oci_core_vcn.this.id
 }
 
-output "subnet_id" {
-  description = "Subnet OCID (once created)"
-  value       = try(oci_core_subnet.this.id, "")
+output "internet_gateway_id" {
+  description = "Internet Gateway OCID"
+  value       = oci_core_internet_gateway.this.id
 }
 
-output "vault_id" {
-  description = "Vault OCID (once created)"
-  value       = try(oci_kms_vault.this.id, "")
+output "route_table_id" {
+  description = "Route Table OCID"
+  value       = oci_core_route_table.this.id
 }
